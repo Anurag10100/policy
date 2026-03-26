@@ -6,46 +6,73 @@ India's first AI-native policy and regulatory intelligence platform.
 
 ```bash
 npm install
-npm run dev          # Start dev server at http://localhost:3000
+cp .env.example .env  # fill in all keys
+npm run dev            # http://localhost:3000
 ```
+
+## Tech Stack
+
+- **Frontend:** Next.js 15 (App Router), Tailwind CSS
+- **Database:** Supabase (Postgres + Auth + RLS)
+- **AI:** Anthropic Claude API (claude-sonnet-4-20250514)
+- **Email:** Resend
+- **Payments:** Razorpay
+- **Hosting:** Vercel
 
 ## Architecture
 
 ```
-src/
-  app/
-    page.tsx              # Landing page with subscription CTA
-    newsletter/page.tsx   # Newsletter preview page
-    api/
-      subscribe/          # Subscriber registration endpoint
-      summarize/          # AI summarization endpoint (Claude API)
-      ingest/             # Trigger ingestion of RBI/SEBI circulars
-  components/             # UI components (Header, Hero, Pricing, etc.)
-  lib/
-    summarizer.ts         # Claude API integration for policy summarization
-    ingestion.ts          # Web scrapers for RBI & SEBI circulars
-    newsletter.ts         # HTML newsletter generator
-scripts/
-  ingest-circulars.ts     # CLI: Fetch and summarize latest circulars
-  generate-newsletter.ts  # CLI: Generate newsletter HTML from summaries
+supabase/migrations/
+  001_init.sql          # Sectors, sources, documents, summaries, users, alerts
+  002_phase2.sql        # Org profiles, impact summaries, watchlist
+
+src/app/
+  page.tsx              # Landing page (hero, sectors, alerts, pricing)
+  login/                # Magic link auth
+  onboarding/           # 3-step sector + role + company setup
+  subscribe/            # Razorpay payment flow
+  dashboard/
+    page.tsx            # Policy feed with filters & search
+    brief/[id]/         # Full brief + impact analysis tabs
+    watchlist/          # Custom keyword/ministry tracking
+  auth/callback/        # Supabase auth callback
+  api/
+    ingest/             # RSS ingestion (GET = cron, POST = single source)
+    summarise/          # Claude AI document summarisation
+    alerts/dispatch/    # Real-time email alerts for paid users
+    digest/weekly/      # Weekly digest cron for all subscribers
+    impact/             # Org-specific impact analysis
+    newsletter/subscribe/ # Public newsletter signup
+    razorpay/webhook/   # Payment webhook verification
+
+src/components/         # UI components (dark editorial aesthetic)
+src/lib/
+  supabase-server.ts    # Server-side Supabase client
+  supabase-browser.ts   # Client-side Supabase client
+
+middleware.ts           # Auth protection for /dashboard/*
+vercel.json             # Cron schedules (ingest every 2h, digest Mondays 3am)
 ```
 
-## Pipeline
+## Sectors Covered
+
+| Sector | Regulators |
+|--------|-----------|
+| BFSI | RBI, SEBI, IRDAI, TRAI |
+| Healthcare | MoHFW, CDSCO, NMC, AIIMS |
+| Energy | MNRE, MoP, CERC, BEE |
+| Education | MoE, UGC, AICTE, NMC |
+| Smart Cities | MoHUA, MeitY, BIS |
+| Defence | MoD, DRDO, DDP, DPIIT |
+| eGovernance | MeitY, DeitY, NIC, UIDAI |
+
+## Database Setup
+
+Run migrations against your Supabase project:
 
 ```bash
-# 1. Ingest latest circulars from RBI & SEBI
-npm run ingest
-
-# 2. Generate newsletter HTML
-npm run generate-newsletter        # defaults to BFSI
-npm run generate-newsletter BFSI   # specify sector
+supabase db push
 ```
-
-## Environment Variables
-
-Copy `.env.example` to `.env` and set:
-
-- `ANTHROPIC_API_KEY` — Required for AI summarization
 
 ## Roadmap
 
