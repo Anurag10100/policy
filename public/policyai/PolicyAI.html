@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440, initial-scale=1" />
+<title>PolicyAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper: '#FAFAF7',
+          ink: {
+            900: '#0E1626',
+            800: '#14223A',
+            700: '#1A2847', // primary navy
+            600: '#2A3858',
+            500: '#485776',
+            400: '#6B7890',
+            300: '#9AA3B6',
+            200: '#C8CDD8',
+            100: '#E3E6ED',
+            50:  '#EFF1F5',
+          },
+          rust: {
+            700: '#8C3A22',
+            600: '#B54A2C', // accent
+            500: '#C5633F',
+            100: '#F4E5DE',
+            50:  '#FBF3EF',
+          },
+          moss: { 600: '#3E6B4F', 100: '#E3ECDF' },
+          amber2: { 600: '#A76B14', 100: '#F4EAD2' },
+          ruby: { 600: '#9A2A3A', 100: '#F3DADF' },
+          line: '#E6E4DC',
+          line2: '#EDEBE3',
+          bg2: '#F4F2EA',
+        },
+        fontFamily: {
+          sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+          serif: ['"IBM Plex Serif"', 'Georgia', 'serif'],
+          mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+        },
+        borderRadius: {
+          none: '0px', sm: '2px', DEFAULT: '4px', md: '6px', lg: '6px', xl: '6px', '2xl': '6px', full: '9999px'
+        },
+        boxShadow: {
+          card: '0 1px 0 rgba(15,22,37,0.04), 0 1px 2px rgba(15,22,37,0.04)',
+          pop:  '0 8px 24px -8px rgba(15,22,37,0.18), 0 2px 6px rgba(15,22,37,0.06)',
+          drawer: '-16px 0 40px -20px rgba(15,22,37,0.18)',
+        },
+        letterSpacing: { tightest: '-0.02em' }
+      }
+    }
+  }
+</script>
+<style>
+  html, body { background:#FAFAF7; color:#14223A; font-feature-settings: "ss01","cv11"; }
+  body { font-family:'IBM Plex Sans', system-ui, sans-serif; }
+  ::selection { background:#F4E5DE; color:#8C3A22; }
+  .font-serif { font-feature-settings: "kern","liga","onum"; }
+  /* Dotted regulator grid pattern */
+  .dot-grid {
+    background-image: radial-gradient(rgba(26,40,71,0.09) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .cite-mark {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    color:#B54A2C;
+    font-feature-settings: "sups";
+    font-size: 0.78em;
+    vertical-align: super;
+    line-height: 0;
+    padding: 0 1px;
+    cursor: pointer;
+  }
+  .cite-mark:hover { color:#8C3A22; text-decoration: underline; }
+  /* Scrollbar */
+  .nice-scroll::-webkit-scrollbar { width: 10px; height:10px; }
+  .nice-scroll::-webkit-scrollbar-thumb { background: #D7D4C8; border-radius: 6px; border: 2px solid #FAFAF7; }
+  .nice-scroll::-webkit-scrollbar-track { background: transparent; }
+  /* Tabular nums everywhere useful */
+  .tnum { font-variant-numeric: tabular-nums; }
+  /* Blink caret */
+  @keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+  .caret { display:inline-block; width:1px; height:1em; background:#1A2847; vertical-align:-2px; margin-left:2px; animation: blink 1s steps(1) infinite; }
+  /* Subtle fade */
+  @keyframes fadeUp { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform:none; } }
+  .fade-up { animation: fadeUp 220ms ease-out both; }
+  /* Streaming word reveal */
+  .stream-word { opacity:0; animation: fadeUp 180ms ease-out forwards; }
+
+  /* Hairline keyline used everywhere */
+  .hl { border-color:#E6E4DC; }
+
+  /* Active nav indicator */
+  .nav-active::before {
+    content:''; position:absolute; left:0; top:6px; bottom:6px; width:2px; background:#B54A2C;
+  }
+  /* Diff styles */
+  .diff-add { background:#E3ECDF; color:#2F5A3F; text-decoration: none; }
+  .diff-del { background:#F3DADF; color:#7A1E2A; text-decoration: line-through; }
+
+  /* Kbd */
+  kbd {
+    font-family:'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    border:1px solid #E6E4DC;
+    background:#F4F2EA;
+    color:#485776;
+    padding: 1px 5px;
+    border-radius: 3px;
+    line-height: 1;
+  }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body class="bg-paper text-ink-800 antialiased">
+<div id="root"></div>
+
+<script type="text/babel" src="./src/icons.jsx"></script>
+<script type="text/babel" src="./src/data.jsx"></script>
+<script type="text/babel" src="./src/primitives.jsx"></script>
+<script type="text/babel" src="./src/screens.jsx"></script>
+<script type="text/babel" src="./src/app.jsx"></script>
+</body>
+</html>
